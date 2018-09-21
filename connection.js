@@ -9,7 +9,7 @@ const dbURL = require('./config');
  */
 module.exports = () => {
   mongoose.connect(dbURL, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
   });
 
   mongoose.connection.on('connected', () => {

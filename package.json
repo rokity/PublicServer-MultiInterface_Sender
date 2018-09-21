@@ -12,10 +12,12 @@
     "start": "node ./app.js 0.0.0.0 80"
   },
   "dependencies": {
+    "bcrypt": "^3.0.0",
     "hapi": "^17.5.4",
     "inert": "^5.1.0",
     "joi": "^13.6.0",
     "lout": "^11.1.0",
+    "moment": "^2.22.2",
     "mongoose": "^5.2.16",
     "nodemon": "^1.18.4",
     "vision": "^5.4.0"
