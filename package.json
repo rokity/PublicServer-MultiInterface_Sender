@@ -1,0 +1,23 @@
+{
+  "name": "PublicServer-MultiInterface_Sender",
+  "version": "1.0.0",
+  "description": "it's a API Server",
+  "main": "app.js",
+  "repository": "\t",
+  "author": "rokity <riccardo.amadio1@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon ./app.js localhost 3000",
+    "start": "node ./app.js 0.0.0.0 80"
+  },
+  "dependencies": {
+    "hapi": "^17.5.4",
+    "inert": "^5.1.0",
+    "joi": "^13.6.0",
+    "lout": "^11.1.0",
+    "mongoose": "^5.2.16",
+    "nodemon": "^1.18.4",
+    "vision": "^5.4.0"
+  }
+}
