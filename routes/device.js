@@ -67,6 +67,40 @@ module.exports = [{
             },
         },
     }
+}, {
+    method: 'GET',
+    path: '/api/device/getall',
+    handler: (req, h) => {
+        h.type = 'application/json';
+        return isAuthenticated(req.query.usertoken)
+            .then(isLogged => {
+                if (isLogged.status == true) {
+                    var UserId = isLogged.id_user;
+                    var Device = mongoose.model('Device');
+                    return Device.find({
+                        UserId: UserId
+                    }).exec().then(devices => {
+                        return h.response(JSON.stringify({
+                            message: "Here we are",
+                            devices: devices
+                        })).code(200);
+                    })
+                } else {
+                    return h.response(JSON.stringify({
+                        message: "unauthorized",
+                        cause: "user token expired"
+                    })).code(401);
+                }
+            })
+    },
+    options: {
+        cors: true,
+        validate: {
+            query: {
+                usertoken: Joi.string().required(),
+            },
+        },
+    }
 }, ];
 
 
