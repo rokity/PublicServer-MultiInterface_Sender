@@ -12,7 +12,7 @@
     "start": "node ./app.js 0.0.0.0 80"
   },
   "dependencies": {
-    "bcrypt": "^3.0.0",
+    "bcrypt": "^2.0.1",
     "hapi": "^17.5.4",
     "inert": "^5.1.0",
     "joi": "^13.6.0",
