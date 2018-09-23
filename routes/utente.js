@@ -84,17 +84,19 @@ module.exports = [{
                                             })
                                             .exec().then(devices => {
                                                 if (devices.length != 0) {
+                                                    var deviceName = devices[0].Name
                                                     return Utente.findOneAndUpdate({
                                                             _id: docs[0]._id
                                                         }, {
                                                             Token: nuovoToken,
                                                             ScadenzaToken: newScadenza
                                                         })
-                                                        .exec().then((doc) => {
+                                                        .exec().then((doc) => {                                                            
                                                             return h.response(JSON.stringify({
                                                                 message: "successfully logged",
                                                                 usertoken: nuovoToken,
-                                                                changeduser: false
+                                                                changeduser: false,
+                                                                devicename:deviceName,
                                                             })).code(401);
                                                         })
                                                 } else {
@@ -114,7 +116,7 @@ module.exports = [{
                                                                     return h.response(JSON.stringify({
                                                                         message: "successfully logged",
                                                                         usertoken: nuovoToken,
-                                                                        changeduser: true
+                                                                        changeduser: true,
                                                                     })).code(401);
                                                                 })
 
