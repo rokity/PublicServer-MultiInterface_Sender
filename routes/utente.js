@@ -130,7 +130,7 @@ module.exports = [{
                                                     message: "successfully logged",
                                                     usertoken: nuovoToken,
                                                     changeduser: false
-                                                })).code(401);
+                                                })).code(200);
                                             })
                                     }
 
