@@ -34,12 +34,7 @@ module.exports = [{
                                                 message: "successfully registrated",
                                                 usertoken: token,
                                             })).code(200)
-                                        })
-                                        .catch((err) => {
-                                            return h.response(JSON.stringify({
-                                                error: err
-                                            })).code(400)
-                                        });
+                                        })                                        
                                 });
                             });
                         });
