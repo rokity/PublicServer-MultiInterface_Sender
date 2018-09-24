@@ -119,9 +119,11 @@ module.exports = [{
                                                                 })
                                                                 .catch(() => {
                                                                     return h.response(JSON.stringify({
-                                                                        message: "unauthorized",
-                                                                        cause: "invalid dtoken"
-                                                                    })).code(401);
+                                                                        message: "successfully logged",
+                                                                        usertoken: nuovoToken,
+                                                                        changeduser: false,
+                                                                        devicename: null,
+                                                                    })).code(200);
                                                                 })
 
                                                         })
