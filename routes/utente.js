@@ -102,6 +102,7 @@ module.exports = [{
                                                             ScadenzaToken: newScadenza
                                                         })
                                                         .exec().then((doc) => {
+                                                            var deviceName = devices[0].Name
                                                             return Device.findOneAndUpdate({
                                                                     DToken: req.payload.devicetoken
                                                                 }, {
@@ -112,6 +113,7 @@ module.exports = [{
                                                                         message: "successfully logged",
                                                                         usertoken: nuovoToken,
                                                                         changeduser: true,
+                                                                        devicename:deviceName,
                                                                     })).code(200);
                                                                 })
 
