@@ -79,7 +79,7 @@ module.exports = [{
                     var Device = mongoose.model('Device');
                     return Device.find({
                         UserId: UserId
-                    }).exec().then(devices => {
+                    },'Name Is_Pc Status').exec().then(devices => {
                         return h.response(JSON.stringify({
                             message: "Here we are",
                             devices: devices
