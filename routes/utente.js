@@ -92,7 +92,7 @@ module.exports = [{
                                                                 usertoken: nuovoToken,
                                                                 changeduser: false,
                                                                 devicename:deviceName,
-                                                            })).code(401);
+                                                            })).code(200);
                                                         })
                                                 } else {
                                                     return Utente.findOneAndUpdate({
@@ -112,7 +112,7 @@ module.exports = [{
                                                                         message: "successfully logged",
                                                                         usertoken: nuovoToken,
                                                                         changeduser: true,
-                                                                    })).code(401);
+                                                                    })).code(200);
                                                                 })
 
                                                         })
@@ -130,7 +130,7 @@ module.exports = [{
                                                     message: "successfully logged",
                                                     usertoken: nuovoToken,
                                                     changeduser: false
-                                                })).code(401);
+                                                })).code(200);
                                             })
                                     }
 
