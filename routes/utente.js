@@ -156,7 +156,7 @@ module.exports = [{
                 payload: {
                     username: Joi.string().required(),
                     psw: Joi.string().required(),
-                    devicetoken: Joi.string(),
+                    devicetoken: Joi.string().optional(),
                 },
             },
         }
