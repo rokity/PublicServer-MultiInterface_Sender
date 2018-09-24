@@ -34,7 +34,7 @@ module.exports = [{
                                                 message: "successfully registrated",
                                                 usertoken: token,
                                             })).code(200)
-                                        })                                        
+                                        })
                                 });
                             });
                         });
@@ -86,12 +86,12 @@ module.exports = [{
                                                             Token: nuovoToken,
                                                             ScadenzaToken: newScadenza
                                                         })
-                                                        .exec().then((doc) => {                                                            
+                                                        .exec().then((doc) => {
                                                             return h.response(JSON.stringify({
                                                                 message: "successfully logged",
                                                                 usertoken: nuovoToken,
                                                                 changeduser: false,
-                                                                devicename:deviceName,
+                                                                devicename: deviceName,
                                                             })).code(200);
                                                         })
                                                 } else {
@@ -102,19 +102,26 @@ module.exports = [{
                                                             ScadenzaToken: newScadenza
                                                         })
                                                         .exec().then((doc) => {
-                                                            var deviceName = devices[0].Name
+
                                                             return Device.findOneAndUpdate({
                                                                     DToken: req.payload.devicetoken
                                                                 }, {
                                                                     UserId: docs[0]._id
                                                                 }).exec()
                                                                 .then(() => {
+                                                                    var deviceName = devices[0].Name
                                                                     return h.response(JSON.stringify({
                                                                         message: "successfully logged",
                                                                         usertoken: nuovoToken,
                                                                         changeduser: true,
-                                                                        devicename:deviceName,
+                                                                        devicename: deviceName,
                                                                     })).code(200);
+                                                                })
+                                                                .catch(() => {
+                                                                    return h.response(JSON.stringify({
+                                                                        message: "unauthorized",
+                                                                        cause: "invalid dtoken"
+                                                                    })).code(401);
                                                                 })
 
                                                         })
