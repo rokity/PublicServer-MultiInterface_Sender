@@ -113,7 +113,7 @@ module.exports = [{
                                         } else {
                                             return h.response(JSON.stringify({
                                                 message: "unauthorized",
-                                                cause: "invalid session code ",
+                                                cause: "invalid session code",
                                             })).code(401)
                                         }
 
