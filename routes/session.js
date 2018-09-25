@@ -105,8 +105,10 @@ module.exports = [{
                                     }).exec().then((doc) => {
                                         if (doc != null) {
                                             return h.response(JSON.stringify({
-                                                message: "session created",
-                                                sessioncode: token,
+                                                message: "session found",
+                                                btname: doc.BLUETOOTH,
+                                                wifiip:doc.WIFI,
+                                                mobileip:doc.MOBILE,
                                             })).code(200)
                                         } else {
                                             return h.response(JSON.stringify({
@@ -139,7 +141,6 @@ module.exports = [{
                     utoken: Joi.string().required(),
                     dtoken: Joi.string().required(),
                     sessioncode: Joi.string().required(),
-                    devicename: Joi.string().required(),
                 },
             },
         }

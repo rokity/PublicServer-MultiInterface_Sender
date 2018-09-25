@@ -6,7 +6,7 @@ const sessionSchema = new mongoose.Schema({
   TIMESTAMP: Date,
   WIFI:Array,
   BLUETOOTH:String,
-  Mobile:Boolean,
+  MOBILE:Boolean,
   CreatedOn: Date,
   Modified: Date,
   Disabled: Boolean,
