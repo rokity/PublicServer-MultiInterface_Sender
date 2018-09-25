@@ -120,7 +120,8 @@ module.exports = [{
                                     })
                                 } else {
                                     return h.response(JSON.stringify({
-                                        message: "token mismatch",
+                                        message: "unauthorized",
+                                        cause: "token mismatch",
                                     })).code(401);
                                 }
                             })
