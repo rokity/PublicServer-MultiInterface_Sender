@@ -4,149 +4,160 @@ var moment = require('moment');
 
 
 module.exports = [{
-    method: 'POST',
-    path: '/api/session/new',
-    handler: (req, h) => {
-        h.type = 'application/json';
-        return isAuthenticated(req.payload.utoken)
-            .then(isLogged => {
-                if (isLogged.status == true) {
-                    var Device = mongoose.model('Device');
-                    return Device.findOne({
-                        UserId: isLogged.id_user,
-                        DToken: req.payload.dtoken
-                    }).exec()
-                        .then(device => {
-                            if (device.length != 0) {
-                                if ((req.payload.btname != undefined && req.payload.wifiip != undefined) ||
-                                    (req.payload.btname != undefined && req.payload.mobileip != undefined) ||
-                                    (req.payload.wifiip != undefined && req.payload.mobileip != undefined)) {
-                                    var Session = mongoose.model('Session');
-                                    return tokenGenerator().then(token => {
-                                        var timestamp = expireDateGenerator();
-                                        return Session.findOneAndUpdate({
-                                            ID_RECEIVING_DEVICE: device._id,
-                                        }, {
-                                                CODE: token,
-                                                TIMESTAMP: timestamp,
-                                                WIFI: req.payload.wifiip,
-                                                BLUETOOTH: req.payload.btname,
-                                                MOBILE: req.payload.mobileip,
-                                                CreatedOn: Date.now(),
-                                                Modified: Date.now(),
-                                                Disabled: false,
-                                            }, {
-                                                upsert: true
-                                            }).exec().then((doc) => {
-                                                return h.response(JSON.stringify({
-                                                    message: "session created",
-                                                    sessioncode: token,
-                                                })).code(200)
-                                            })
-                                            .catch((err) => {
-                                                return h.response(JSON.stringify({
-                                                    error: err
-                                                })).code(400)
-                                            });
-                                    });
-                                } else {
-                                    return h.response(JSON.stringify({
-                                        message: "At least two interface must be enabled",
-                                    })).code(400);
-                                }
-
-                            } else {
-                                return h.response(JSON.stringify({
-                                    message: "token mismatch",
-                                })).code(401);
-                            }
-                        })
-                } else {
-                    return h.response(JSON.stringify({
-                        message: "unauthorized",
-                        cause: "user token expired"
-                    })).code(401);
-                }
-
-            })
-
-    },
-    options: {
-        cors: true,
-        validate: {
-            payload: {
-                utoken: Joi.string().required(),
-                dtoken: Joi.string().required(),
-                btname: Joi.string().optional(),
-                wifiip: Joi.array().optional(),
-                mobileip: Joi.boolean().optional(),
-            },
-        },
-    }
-},
-{
-    method: 'POST',
-    path: '/api/session/connect',
-    handler: (req, h) => {
-        h.type = 'application/json';
-        return isAuthenticated(req.payload.utoken)
-            .then(isLogged => {
-                if (isLogged.status == true) {
-                    var Device = mongoose.model('Device');
-                    return Device.findOne({
-                        UserId: isLogged.id_user,
-                        DToken: req.payload.dtoken
-                    }).exec()
-                        .then(device => {
-                            if (device.length != 0) {
-                                var Session = mongoose.model('Session');
-                                return Session.findOneAndRemove({
-                                    CODE: req.payload.sessioncode,
-                                }).exec().then((doc) => {
-                                    if (doc != null) {
-                                        return h.response(JSON.stringify({
-                                            message: "session found",
-                                            btname: doc.BLUETOOTH,
-                                            wifiip: doc.WIFI,
-                                            mobileip: doc.MOBILE,
-                                        })).code(200)
+        method: 'POST',
+        path: '/api/session/new',
+        handler: (req, h) => {
+            h.type = 'application/json';
+            return isAuthenticated(req.payload.utoken)
+                .then(isLogged => {
+                    if (isLogged.status == true) {
+                        var Device = mongoose.model('Device');
+                        return Device.findOne({
+                                UserId: isLogged.id_user,
+                                DToken: req.payload.dtoken
+                            }).exec()
+                            .then(device => {
+                                if (device.length != 0) {
+                                    if ((req.payload.btname != undefined && req.payload.wifiip != undefined) ||
+                                        (req.payload.btname != undefined && req.payload.mobileip != undefined) ||
+                                        (req.payload.wifiip != undefined && req.payload.mobileip != undefined)) {
+                                        var Session = mongoose.model('Session');
+                                        return tokenGenerator().then(token => {
+                                            var timestamp = expireDateGenerator();
+                                            return Session.findOneAndUpdate({
+                                                    ID_RECEIVING_DEVICE: device._id,
+                                                }, {
+                                                    CODE: token,
+                                                    TIMESTAMP: timestamp,
+                                                    WIFI: req.payload.wifiip,
+                                                    BLUETOOTH: req.payload.btname,
+                                                    MOBILE: req.payload.mobileip,
+                                                    CreatedOn: Date.now(),
+                                                    Modified: Date.now(),
+                                                    Disabled: false,
+                                                }, {
+                                                    upsert: true
+                                                }).exec().then((doc) => {
+                                                    return h.response(JSON.stringify({
+                                                        message: "session created",
+                                                        sessioncode: token,
+                                                    })).code(200)
+                                                })
+                                                .catch((err) => {
+                                                    return h.response(JSON.stringify({
+                                                        error: err
+                                                    })).code(400)
+                                                });
+                                        });
                                     } else {
                                         return h.response(JSON.stringify({
-                                            message: "unauthorized",
-                                            cause: "invalid session code",
-                                        })).code(401)
+                                            message: "At least two interface must be enabled",
+                                        })).code(400);
                                     }
 
-                                })
-                            } else {
-                                return h.response(JSON.stringify({
-                                    message: "unauthorized",
-                                    cause: "token mismatch",
-                                })).code(401);
-                            }
-                        })
-                } else {
-                    return h.response(JSON.stringify({
-                        message: "unauthorized",
-                        cause: "user token expired"
-                    })).code(401);
-                }
+                                } else {
+                                    return h.response(JSON.stringify({
+                                        message: "token mismatch",
+                                    })).code(401);
+                                }
+                            })
+                    } else {
+                        return h.response(JSON.stringify({
+                            message: "unauthorized",
+                            cause: "user token expired"
+                        })).code(401);
+                    }
 
-            })
+                })
 
-    },
-    options: {
-        cors: true,
-        validate: {
-            payload: {
-                utoken: Joi.string().required(),
-                dtoken: Joi.string().required(),
-                sessioncode: Joi.string().required(),
-            },
         },
-    }
-},
+        options: {
+            cors: true,
+            validate: {
+                payload: {
+                    utoken: Joi.string().required(),
+                    dtoken: Joi.string().required(),
+                    btname: Joi.string().optional(),
+                    wifiip: Joi.array().optional(),
+                    mobileip: Joi.boolean().optional(),
+                },
+            },
+        }
+    },
+    {
+        method: 'POST',
+        path: '/api/session/connect',
+        handler: (req, h) => {
+            h.type = 'application/json';
+            return isAuthenticated(req.payload.utoken)
+                .then(isLogged => {
+                    if (isLogged.status == true) {
+                        var Device = mongoose.model('Device');
+                        return Device.findOne({
+                                UserId: isLogged.id_user,
+                                DToken: req.payload.dtoken
+                            }).exec()
+                            .then(device => {
+                                if (device.length != 0) {
+                                    var Session = mongoose.model('Session');
+                                    return Session.findOneAndRemove({
+                                        CODE: req.payload.sessioncode,
+                                    }).exec().then((doc) => {
+                                        if (doc != null) {
+                                            if (device._id != doc.ID_RECEIVING_DEVICE) {
+                                                return h.response(JSON.stringify({
+                                                    message: "session found",
+                                                    btname: doc.BLUETOOTH,
+                                                    wifiip: doc.WIFI,
+                                                    mobileip: doc.MOBILE,
+                                                })).code(200)
+                                            } else {
+                                                return h.response(JSON.stringify({
+                                                    message: "unauthorized",
+                                                    cause: "same device",
+                                                })).code(401)
+                                            }
+
+                                        } else {
+                                            return h.response(JSON.stringify({
+                                                message: "unauthorized",
+                                                cause: "invalid session code",
+                                            })).code(401)
+                                        }
+
+                                    })
+                                } else {
+                                    return h.response(JSON.stringify({
+                                        message: "unauthorized",
+                                        cause: "token mismatch",
+                                    })).code(401);
+                                }
+                            })
+                    } else {
+                        return h.response(JSON.stringify({
+                            message: "unauthorized",
+                            cause: "user token expired"
+                        })).code(401);
+                    }
+
+                })
+
+        },
+        options: {
+            cors: true,
+            validate: {
+                payload: {
+                    utoken: Joi.string().required(),
+                    dtoken: Joi.string().required(),
+                    sessioncode: Joi.string().required(),
+                },
+            },
+        }
+    },
 ];
+
+
+
 
 //TimeStamp più 15 minuti
 var expireDateGenerator = () => {
