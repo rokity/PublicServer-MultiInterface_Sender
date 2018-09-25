@@ -1,6 +1,3 @@
-
-
-
 const Hapi = require('hapi');
 
 // Plugin Hapi
