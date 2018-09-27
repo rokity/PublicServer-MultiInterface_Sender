@@ -18,9 +18,7 @@ module.exports = [{
                             }).exec()
                             .then(device => {
                                 if (device.length != 0) {
-                                    if ((req.payload.btname != undefined && req.payload.wifiip != undefined) ||
-                                        (req.payload.btname != undefined && req.payload.mobileip != undefined) ||
-                                        (req.payload.wifiip != undefined && req.payload.mobileip != undefined)) {
+                                    if (req.payload.btname != undefined || req.payload.wifiip != undefined || req.payload.mobileip != undefined){
                                         var Session = mongoose.model('Session');
                                         return tokenGenerator().then(token => {
                                             var timestamp = expireDateGenerator();
@@ -51,7 +49,7 @@ module.exports = [{
                                         });
                                     } else {
                                         return h.response(JSON.stringify({
-                                            message: "At least two interface must be enabled",
+                                            message: "At least one interface must be enabled",
                                         })).code(400);
                                     }
 
@@ -104,21 +102,32 @@ module.exports = [{
                                         CODE: req.payload.sessioncode,
                                     }).exec().then((doc) => {
                                         if (doc != null) {
-                                            return h.response(JSON.stringify({
-                                                message: "session created",
-                                                sessioncode: token,
-                                            })).code(200)
+                                            if (device._id != doc.ID_RECEIVING_DEVICE) {
+                                                return h.response(JSON.stringify({
+                                                    message: "session found",
+                                                    btname: doc.BLUETOOTH,
+                                                    wifiip: doc.WIFI,
+                                                    mobileip: doc.MOBILE,
+                                                })).code(200)
+                                            } else {
+                                                return h.response(JSON.stringify({
+                                                    message: "unauthorized",
+                                                    cause: "same device",
+                                                })).code(401)
+                                            }
+
                                         } else {
                                             return h.response(JSON.stringify({
                                                 message: "unauthorized",
-                                                cause: "codice non trovato",
+                                                cause: "invalid session code",
                                             })).code(401)
                                         }
 
                                     })
                                 } else {
                                     return h.response(JSON.stringify({
-                                        message: "token mismatch",
+                                        message: "unauthorized",
+                                        cause: "token mismatch",
                                     })).code(401);
                                 }
                             })
@@ -139,12 +148,14 @@ module.exports = [{
                     utoken: Joi.string().required(),
                     dtoken: Joi.string().required(),
                     sessioncode: Joi.string().required(),
-                    devicename: Joi.string().required(),
                 },
             },
         }
     },
 ];
+
+
+
 
 //TimeStamp più 15 minuti
 var expireDateGenerator = () => {
@@ -153,12 +164,12 @@ var expireDateGenerator = () => {
     return data;
 }
 
+
 //SESSION CODE 
 var tokenGenerator = () => {
     var Session = mongoose.model('Session');
     return new Promise(resolvee => {
-        require('crypto').randomBytes(3, function (err, buffer) {
-            var token = buffer.toString('hex');
+            var token = Math.floor(100000 + Math.random() * 900000);
 
             new Promise(resolve => {
                 Session.find({
@@ -176,7 +187,7 @@ var tokenGenerator = () => {
                 else
                     resolvee(tokenGenerator());
             })
-        })
+        
     })
 
 }
