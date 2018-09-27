@@ -165,17 +165,13 @@ var expireDateGenerator = () => {
     data.add(15, 'm')
     return data;
 }
-var crypto = require('crypto'), biguint = require('biguint-format')
 
-function random(qty) {
-  return crypto.randomBytes(qty)
-}
 
 //SESSION CODE 
 var tokenGenerator = () => {
     var Session = mongoose.model('Session');
     return new Promise(resolvee => {
-            var token = biguint.format(random(6), 'dec')
+            var token = Math.floor(100000 + Math.random() * 900000);
 
             new Promise(resolve => {
                 Session.find({
