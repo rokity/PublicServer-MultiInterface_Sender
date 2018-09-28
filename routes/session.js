@@ -18,9 +18,7 @@ module.exports = [{
                             }).exec()
                             .then(device => {
                                 if (device.length != 0) {
-                                    if ((req.payload.btname != undefined && req.payload.wifiip != undefined) ||
-                                        (req.payload.btname != undefined && req.payload.mobileip != undefined) ||
-                                        (req.payload.wifiip != undefined && req.payload.mobileip != undefined)) {
+                                    if (req.payload.btname != undefined || req.payload.wifiip != undefined || req.payload.mobileip != undefined){
                                         var Session = mongoose.model('Session');
                                         return tokenGenerator().then(token => {
                                             var timestamp = expireDateGenerator();
@@ -51,7 +49,7 @@ module.exports = [{
                                         });
                                     } else {
                                         return h.response(JSON.stringify({
-                                            message: "At least two interface must be enabled",
+                                            message: "At least one interface must be enabled",
                                         })).code(400);
                                     }
 
