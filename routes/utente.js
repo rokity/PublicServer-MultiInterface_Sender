@@ -80,6 +80,114 @@ module.exports = [{
                                             .exec().then(devices => {
                                                 if (devices.length != 0) {
                                                     var deviceName = devices[0].Name
+                                                    return Utente.findOne({
+                                                        _id: docs[0]._id
+                                                    }).exec().then(user => {
+                                                        return isAuthenticated(user.Token).then(logged => {
+                                                            if (logged.status == true) {
+                                                                return h.response(JSON.stringify({
+                                                                    message: "successfully logged",
+                                                                    usertoken: user.Token,
+                                                                    changeduser: false,
+                                                                    devicename: deviceName,
+                                                                })).code(200);
+                                                            } else {
+                                                                return Utente.findOneAndUpdate({
+                                                                        _id: docs[0]._id
+                                                                    }, {
+                                                                        Token: nuovoToken,
+                                                                        ScadenzaToken: newScadenza
+                                                                    })
+                                                                    .exec().then((doc) => {
+                                                                        return h.response(JSON.stringify({
+                                                                            message: "successfully logged",
+                                                                            usertoken: nuovoToken,
+                                                                            changeduser: false,
+                                                                            devicename: deviceName,
+                                                                        })).code(200);
+                                                                    })
+                                                            }
+                                                        })
+                                                    });
+                                                } else {
+                                                    return Utente.findOne({
+                                                        _id: docs[0]._id
+                                                    }).exec().then(user => {
+                                                        return isAuthenticated(user.Token).then(logged => {
+                                                            if (logged.status == true) {
+                                                                return Device.findOneAndUpdate({
+                                                                        DToken: req.payload.devicetoken
+                                                                    }, {
+                                                                        UserId: docs[0]._id
+                                                                    }).exec()
+                                                                    .then(() => {
+                                                                        var deviceName = devices[0].Name
+                                                                        return h.response(JSON.stringify({
+                                                                            message: "successfully logged",
+                                                                            usertoken: user.Token,
+                                                                            changeduser: true,
+                                                                            devicename: deviceName,
+                                                                        })).code(200);
+                                                                    })
+                                                                    .catch(() => {
+                                                                        return h.response(JSON.stringify({
+                                                                            message: "successfully logged",
+                                                                            usertoken: user.Token,
+                                                                            changeduser: false,
+                                                                            devicename: null,
+                                                                        })).code(200);
+                                                                    })
+                                                            } else {
+                                                                return Utente.findOneAndUpdate({
+                                                                        _id: docs[0]._id
+                                                                    }, {
+                                                                        Token: nuovoToken,
+                                                                        ScadenzaToken: newScadenza
+                                                                    })
+                                                                    .exec().then((doc) => {
+
+                                                                        return Device.findOneAndUpdate({
+                                                                                DToken: req.payload.devicetoken
+                                                                            }, {
+                                                                                UserId: docs[0]._id
+                                                                            }).exec()
+                                                                            .then(() => {
+                                                                                var deviceName = devices[0].Name
+                                                                                return h.response(JSON.stringify({
+                                                                                    message: "successfully logged",
+                                                                                    usertoken: nuovoToken,
+                                                                                    changeduser: true,
+                                                                                    devicename: deviceName,
+                                                                                })).code(200);
+                                                                            })
+                                                                            .catch(() => {
+                                                                                return h.response(JSON.stringify({
+                                                                                    message: "successfully logged",
+                                                                                    usertoken: nuovoToken,
+                                                                                    changeduser: false,
+                                                                                    devicename: null,
+                                                                                })).code(200);
+                                                                            })
+
+                                                                    })
+                                                            }
+                                                        });
+                                                    });
+
+                                                }
+                                            })
+                                    } else {
+                                        return Utente.findOne({
+                                            _id: docs[0]._id
+                                        }).exec().then(user => {
+                                            return isAuthenticated(user.Token).then(logged => {
+                                                if (logged.status == true) {
+                                                    return h.response(JSON.stringify({
+                                                        message: "successfully logged",
+                                                        usertoken: user.Token,
+                                                        changeduser: false
+                                                    })).code(200);
+                                                } else {
                                                     return Utente.findOneAndUpdate({
                                                             _id: docs[0]._id
                                                         }, {
@@ -90,59 +198,13 @@ module.exports = [{
                                                             return h.response(JSON.stringify({
                                                                 message: "successfully logged",
                                                                 usertoken: nuovoToken,
-                                                                changeduser: false,
-                                                                devicename: deviceName,
+                                                                changeduser: false
                                                             })).code(200);
                                                         })
-                                                } else {
-                                                    return Utente.findOneAndUpdate({
-                                                            _id: docs[0]._id
-                                                        }, {
-                                                            Token: nuovoToken,
-                                                            ScadenzaToken: newScadenza
-                                                        })
-                                                        .exec().then((doc) => {
-
-                                                            return Device.findOneAndUpdate({
-                                                                    DToken: req.payload.devicetoken
-                                                                }, {
-                                                                    UserId: docs[0]._id
-                                                                }).exec()
-                                                                .then(() => {
-                                                                    var deviceName = devices[0].Name
-                                                                    return h.response(JSON.stringify({
-                                                                        message: "successfully logged",
-                                                                        usertoken: nuovoToken,
-                                                                        changeduser: true,
-                                                                        devicename: deviceName,
-                                                                    })).code(200);
-                                                                })
-                                                                .catch(() => {
-                                                                    return h.response(JSON.stringify({
-                                                                        message: "successfully logged",
-                                                                        usertoken: nuovoToken,
-                                                                        changeduser: false,
-                                                                        devicename: null,
-                                                                    })).code(200);
-                                                                })
-
-                                                        })
                                                 }
-                                            })
-                                    } else {
-                                        return Utente.findOneAndUpdate({
-                                                _id: docs[0]._id
-                                            }, {
-                                                Token: nuovoToken,
-                                                ScadenzaToken: newScadenza
-                                            })
-                                            .exec().then((doc) => {
-                                                return h.response(JSON.stringify({
-                                                    message: "successfully logged",
-                                                    usertoken: nuovoToken,
-                                                    changeduser: false
-                                                })).code(200);
-                                            })
+                                            });
+                                        });
+
                                     }
 
 
