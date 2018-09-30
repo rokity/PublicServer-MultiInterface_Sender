@@ -253,7 +253,7 @@ var tokenGenerator = () => {
 //10 ore dura il token utente
 var expireDateGenerator = () => {
     var data = moment();
-    data.add(10, 'h')
+    data.add(2, 'w')
     return data;
 }
 
