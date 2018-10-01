@@ -20,6 +20,7 @@
     "moment": "^2.22.2",
     "mongoose": "^5.2.16",
     "nodemon": "^1.18.4",
-    "vision": "^5.4.0"
+    "vision": "^5.4.0",
+    "websocket": "^1.0.28"
   }
 }

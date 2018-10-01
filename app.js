@@ -21,6 +21,24 @@ const routes = require('./routes');
 
 server.route(routes);
 
+//WebSocket
+var WebSocketServer = require('websocket').server;
+var wsServer = new WebSocketServer({httpServer:server.listener})
+// WebSocket server
+wsServer.on('request', function(request) {
+  var connection = request.accept(null, request.origin);
+
+  // This is the most important callback for us, we'll handle
+  // all messages from users here.
+  connection.on('message', function(message) {
+    console.log(message.utf8Data);
+  });
+
+  connection.on('close', function(connection) {
+    // close user connection
+  });
+});
+
 //Token Array
 global.tokens = []
 
