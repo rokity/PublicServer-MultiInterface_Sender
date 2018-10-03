@@ -106,14 +106,15 @@ module.exports = [{
     path: '/api/test',
     handler: (req, h) => {
         h.type = 'application/json';
+
         return h.response(JSON.stringify({
-           message:request.info.address
+           message:req.info.remoteAddress
         })).code(200);
     },
     options: {
         cors: true,
     }
-}, ];
+} ];
 
 
 var tokenGenerator = () => {
