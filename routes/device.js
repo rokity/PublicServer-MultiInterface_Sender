@@ -101,6 +101,18 @@ module.exports = [{
             },
         },
     }
+}, {
+    method: 'GET',
+    path: '/api/test',
+    handler: (req, h) => {
+        h.type = 'application/json';
+        return h.response(JSON.stringify({
+           message:request.info.address
+        })).code(200);
+    },
+    options: {
+        cors: true,
+    }
 }, ];
 
 

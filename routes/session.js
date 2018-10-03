@@ -102,7 +102,7 @@ module.exports = [{
                                         CODE: req.payload.sessioncode,
                                     }).exec().then((doc) => {
                                         if (doc != null) {
-                                            if (device._id != doc.ID_RECEIVING_DEVICE) {
+                                            if (device._id != doc.ID_RECEIVING_DEVICE) {                                                
                                                 return h.response(JSON.stringify({
                                                     message: "session found",
                                                     btname: doc.BLUETOOTH,
