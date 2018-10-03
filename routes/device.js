@@ -108,7 +108,7 @@ module.exports = [{
         h.type = 'application/json';
 
         return h.response(JSON.stringify({
-           message:req.info.remoteAddress
+           message:req.info.host
         })).code(200);
     },
     options: {
