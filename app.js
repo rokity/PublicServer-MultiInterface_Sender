@@ -21,7 +21,7 @@ const routes = require('./routes');
 
 server.route(routes);
 
-/*
+
 //WebSocket
 var WebSocketServer = require('websocket').server;
 var wsServer = new WebSocketServer({httpServer:server.listener})
@@ -38,7 +38,7 @@ wsServer.on('request', function(request) {
   connection.on('close', function(connection) {
     // close user connection
   });
-});*/
+});
 
 //Token Array
 global.tokens = []
