@@ -72,8 +72,7 @@ wsServer.on('request', function (request) {
 
           });
 
-      } else if (msg['ricevente_dtoken'] != null) {
-
+      } else if (msg['ricevente_dtoken'] != null && msg['interfacce'] != null) {
         if (connections[msg['ricevente_dtoken']] != null) {
           for (key in connections) {
             if (connections[key] == connection) {
@@ -87,7 +86,8 @@ wsServer.on('request', function (request) {
                   if (ricevente_dispositivo.Status == true) {
                     var conn = connections[msg['ricevente_dtoken']]
                     conn.sendUTF(JSON.stringify({
-                      riceverai_da: dtoken_mittente
+                      riceverai_da: dtoken_mittente,
+                      interfacce: msg['interfacce']
                     }));
                     connection.sendUTF(JSON.stringify({
                       job: true
@@ -100,15 +100,10 @@ wsServer.on('request', function (request) {
 
                 })
 
-            } else {
-              connection.sendUTF(JSON.stringify({
-                job: false
-              }));
             }
           }
-
-        }else
-        {
+        } else {
+          console.log("here7");
           connection.sendUTF(JSON.stringify({
             job: false
           }));
