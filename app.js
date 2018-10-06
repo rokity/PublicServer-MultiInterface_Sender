@@ -27,6 +27,7 @@ var WebSocketServer = require('websocket').server;
 var wsServer = new WebSocketServer({
   httpServer: server.listener
 })
+var connections = {};
 
 // WebSocket server
 wsServer.on('request', function (request) {
@@ -35,40 +36,83 @@ wsServer.on('request', function (request) {
   global.websocket = connection;
 
   connection.on('message', function (message) {
-    console.log(message)
     try {
       var msg = JSON.parse(message.utf8Data);
       if (msg['dtoken'] != null && msg['utoken']) {
         var mongoose = require('mongoose')
         var Device = mongoose.model('Device');
-        var Utente = mongoose.model('Utente');
         isAuthenticated(msg['utoken'])
-            .then(isLogged => {
-              if(isLogged.status==true)
-              {
-                Device.findOneAndUpdate({
-                  DToken:msg['dtoken'],
-                  UserId:isLogged.id_user._id
-                },{
-                  Status:true
-              }).exec().then( device =>
-                  {
-                    if(device.length!=0)
-                      connection.sendUTF(JSON.stringify({status:true}));
-                    else
-                      connection.sendUTF(JSON.stringify({status:false}));
-                  })
-                  .catch( val =>
-                    {
-                      connection.sendUTF(JSON.stringify({status:false}));
-                    })
-              }
-              else
-              {
-                connection.sendUTF(JSON.stringify({status:false}));
-              }
-            });
+          .then(isLogged => {
+            if (isLogged.status == true) {
+              Device.findOneAndUpdate({
+                  DToken: msg['dtoken'],
+                  UserId: isLogged.id_user._id
+                }, {
+                  Status: true
+                }).exec().then(device => {
+                  if (device.length != 0) {
+                    connection.sendUTF(JSON.stringify({
+                      status: true
+                    }));
+                    connections[msg['dtoken']] = connection;
+                  } else
+                    connection.sendUTF(JSON.stringify({
+                      status: false
+                    }));
+                })
+                .catch(val => {
+                  connection.sendUTF(JSON.stringify({
+                    status: false
+                  }));
+                })
+            } else
+              connection.sendUTF(JSON.stringify({
+                status: false
+              }));
 
+          });
+
+      } else if (msg['ricevente_dtoken'] != null) {
+
+        if (connections[msg['ricevente_dtoken']] != null) {
+          for (key in connections) {
+            if (connections[key] == connection) {
+              var dtoken_mittente = key
+              var mongoose = require('mongoose')
+              var Device = mongoose.model('Device');
+              Device.findOne({
+                  DToken: msg['ricevente_dtoken']
+                })
+                .exec().then(ricevente_dispositivo => {
+                  if (ricevente_dispositivo.Status == true) {
+                    var conn = connections[msg['ricevente_dtoken']]
+                    conn.sendUTF(JSON.stringify({
+                      riceverai_da: dtoken_mittente
+                    }));
+                    connection.sendUTF(JSON.stringify({
+                      job: true
+                    }));
+                  } else {
+                    connection.sendUTF(JSON.stringify({
+                      job: false
+                    }));
+                  }
+
+                })
+
+            } else {
+              connection.sendUTF(JSON.stringify({
+                job: false
+              }));
+            }
+          }
+
+        }else
+        {
+          connection.sendUTF(JSON.stringify({
+            job: false
+          }));
+        }
       }
     } catch (e) {
       console.log(e);
@@ -105,37 +149,37 @@ init();
 
 var isAuthenticated = (token) => {
   return new Promise((resolve, reject) => {
-      if (token == undefined) {
-          resolve({
+    if (token == undefined) {
+      resolve({
+        status: false
+      });
+    } else {
+      var mongoose = require('mongoose')
+      var moment = require('moment');
+      var Utente = mongoose.model('Utente');
+      Utente.find({
+        Token: token
+      }).exec().then(docs => {
+        if (docs.length != 0) {
+          var expireDate = docs[0].ScadenzaToken;
+          var date = moment();
+          if (moment(date).isAfter(expireDate))
+            resolve({
               status: false
+            })
+          else
+            resolve({
+              status: true,
+              id_user: docs[0]._id
+            })
+        } else {
+          resolve({
+            status: false
           });
-      } else {
-        var mongoose = require('mongoose')
-        var moment = require('moment');
-          var Utente = mongoose.model('Utente');
-          Utente.find({
-              Token: token
-          }).exec().then(docs => {
-              if (docs.length != 0) {
-                  var expireDate = docs[0].ScadenzaToken;
-                  var date = moment();
-                  if (moment(date).isAfter(expireDate))
-                      resolve({
-                          status: false
-                      })
-                  else
-                      resolve({
-                          status: true,
-                          id_user: docs[0]._id
-                      })
-              } else {
-                  resolve({
-                      status: false
-                  });
-              }
+        }
 
-          })
+      })
 
-      }
+    }
   });
 }

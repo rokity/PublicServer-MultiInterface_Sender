@@ -80,7 +80,7 @@ module.exports = [{
                     var Device = mongoose.model('Device');
                     return Device.find({
                         UserId: UserId
-                    },'Name Is_Pc Status').exec().then(devices => {
+                    },'Name Is_Pc Status DToken').exec().then(devices => {
                         return h.response(JSON.stringify({
                             message: "Here we are",
                             devices: devices
