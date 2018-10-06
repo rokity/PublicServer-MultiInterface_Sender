@@ -53,8 +53,19 @@ wsServer.on('request', function (request) {
                   Status:true
               }).exec().then( device =>
                   {
-                    console.log("attivo");
+                    if(device.length!=0)
+                      connection.sendUTF(JSON.stringify({status:true}));
+                    else
+                      connection.sendUTF(JSON.stringify({status:false}));
                   })
+                  .catch( val =>
+                    {
+                      connection.sendUTF(JSON.stringify({status:false}));
+                    })
+              }
+              else
+              {
+                connection.sendUTF(JSON.stringify({status:false}));
               }
             });
 
