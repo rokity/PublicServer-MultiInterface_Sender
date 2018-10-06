@@ -29,11 +29,12 @@ var wsServer = new WebSocketServer({httpServer:server.listener})
 wsServer.on('request', function(request) {
   var connection = request.accept(null, request.origin);
 
+  global.websocket = connection;
   // This is the most important callback for us, we'll handle
   // all messages from users here.
-  connection.on('message', function(message) {
-    console.log(message.utf8Data);
-  });
+  // connection.on('message', function(message) {
+  //   console.log(message.utf8Data);
+  // });
 
   connection.on('close', function(connection) {
     // close user connection

@@ -22,7 +22,7 @@ module.exports = [{
                                     var newDevice = new Device({
                                         UserId: isLogged.id_user,
                                         Name: req.payload.devicename,
-                                        Is_Pc: false,
+                                        Is_Pc: req.payload.is_PC,
                                         Status: false,
                                         DToken: token,
                                         CreatedOn: Date.now(),
@@ -63,7 +63,8 @@ module.exports = [{
         validate: {
             payload: {
                 utoken: Joi.string().required(),
-                devicename: Joi.string().required()
+                devicename: Joi.string().required(),
+                is_PC:Joi.boolean().required(),
             },
         },
     }

@@ -103,13 +103,19 @@ module.exports = [{
                                     }).exec().then((doc) => {
                                         if (doc != null) {
                                             if (device._id != doc.ID_RECEIVING_DEVICE) {
-                                                                                                
-                                                return h.response(JSON.stringify({
-                                                    message: "session found",
-                                                    btname: doc.BLUETOOTH,
-                                                    wifiip: doc.WIFI,
-                                                    mobileip: doc.MOBILE,
-                                                })).code(200)
+                                                return Device.findOne({_id:doc.ID_RECEIVING_DEVICE}).exec()
+                                                        .then( device_ricevente =>
+                                                            {
+                                                                global.websocket.send(JSON.stringify({ricevente:device_ricevente.DToken,mittente:req.payload.dtoken}));  
+                                                                return h.response(JSON.stringify({
+                                                                    message: "session found",
+                                                                    btname: doc.BLUETOOTH,
+                                                                    wifiip: doc.WIFI,
+                                                                    mobileip: doc.MOBILE,
+                                                                })).code(200)
+                                                            })
+                                                                                              
+                                                
                                             } else {
                                                 return h.response(JSON.stringify({
                                                     message: "unauthorized",
