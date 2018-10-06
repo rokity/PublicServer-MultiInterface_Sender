@@ -24,19 +24,50 @@ server.route(routes);
 
 //WebSocket
 var WebSocketServer = require('websocket').server;
-var wsServer = new WebSocketServer({httpServer:server.listener})
+var wsServer = new WebSocketServer({
+  httpServer: server.listener
+})
+
 // WebSocket server
-wsServer.on('request', function(request) {
+wsServer.on('request', function (request) {
   var connection = request.accept(null, request.origin);
 
   global.websocket = connection;
-  // This is the most important callback for us, we'll handle
-  // all messages from users here.
-  // connection.on('message', function(message) {
-  //   console.log(message.utf8Data);
-  // });
 
-  connection.on('close', function(connection) {
+  connection.on('message', function (message) {
+    console.log(message)
+    try {
+      var msg = JSON.parse(message.utf8Data);
+      if (msg['dtoken'] != null && msg['utoken']) {
+        var mongoose = require('mongoose')
+        var Device = mongoose.model('Device');
+        var Utente = mongoose.model('Utente');
+        isAuthenticated(msg['utoken'])
+            .then(isLogged => {
+              if(isLogged.status==true)
+              {
+                Device.findOneAndUpdate({
+                  DToken:msg['dtoken'],
+                  UserId:isLogged.id_user._id
+                },{
+                  Status:true
+              }).exec().then( device =>
+                  {
+                    console.log("attivo");
+                  })
+              }
+            });
+
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+
+  });
+
+
+  connection.on('close', function (connection) {
     // close user connection
   });
 });
@@ -61,4 +92,39 @@ process.on('unhandledRejection', (err) => {
 init();
 
 
+var isAuthenticated = (token) => {
+  return new Promise((resolve, reject) => {
+      if (token == undefined) {
+          resolve({
+              status: false
+          });
+      } else {
+        var mongoose = require('mongoose')
+        var moment = require('moment');
+          var Utente = mongoose.model('Utente');
+          Utente.find({
+              Token: token
+          }).exec().then(docs => {
+              if (docs.length != 0) {
+                  var expireDate = docs[0].ScadenzaToken;
+                  var date = moment();
+                  if (moment(date).isAfter(expireDate))
+                      resolve({
+                          status: false
+                      })
+                  else
+                      resolve({
+                          status: true,
+                          id_user: docs[0]._id
+                      })
+              } else {
+                  resolve({
+                      status: false
+                  });
+              }
 
+          })
+
+      }
+  });
+}
