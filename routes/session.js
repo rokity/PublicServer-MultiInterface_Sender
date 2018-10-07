@@ -106,7 +106,7 @@ module.exports = [{
                                                 return Device.findOne({_id:doc.ID_RECEIVING_DEVICE}).exec()
                                                         .then( device_ricevente =>
                                                             {
-                                                                global.websocket.send(JSON.stringify({ricevente:device_ricevente.DToken,mittente:req.payload.dtoken}));  
+                                                                global.connections['java_server'].send(JSON.stringify({ricevente:device_ricevente.DToken,mittente:req.payload.dtoken}));  
                                                                 return h.response(JSON.stringify({
                                                                     message: "session found",
                                                                     btname: doc.BLUETOOTH,

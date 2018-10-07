@@ -27,18 +27,20 @@ var WebSocketServer = require('websocket').server;
 var wsServer = new WebSocketServer({
   httpServer: server.listener
 })
-var connections = {};
+global.connections = {}
 
 // WebSocket server
 wsServer.on('request', function (request) {
   var connection = request.accept(null, request.origin);
 
-  global.websocket = connection;
 
   connection.on('message', function (message) {
     try {
       var msg = JSON.parse(message.utf8Data);
-      if (msg['dtoken'] != null && msg['utoken']) {
+      if(mesg['java_server']!=null)
+      {
+        global.connections['java_server'] = connection;
+      } else if (msg['dtoken'] != null && msg['utoken']) {
         var mongoose = require('mongoose')
         var Device = mongoose.model('Device');
         isAuthenticated(msg['utoken'])
@@ -54,7 +56,7 @@ wsServer.on('request', function (request) {
                     connection.sendUTF(JSON.stringify({
                       status: true
                     }));
-                    connections[msg['dtoken']] = connection;
+                    global.connections[msg['dtoken']] = connection;
                   } else
                     connection.sendUTF(JSON.stringify({
                       status: false
@@ -73,9 +75,9 @@ wsServer.on('request', function (request) {
           });
 
       } else if (msg['ricevente_dtoken'] != null && msg['interfacce'] != null) {
-        if (connections[msg['ricevente_dtoken']] != null) {
-          for (key in connections) {
-            if (connections[key] == connection) {
+        if (global.connections[msg['ricevente_dtoken']] != null) {
+          for (key in global.connections) {
+            if (global.connections[key] == connection) {
               var dtoken_mittente = key
               var mongoose = require('mongoose')
               var Device = mongoose.model('Device');
@@ -84,14 +86,17 @@ wsServer.on('request', function (request) {
                 })
                 .exec().then(ricevente_dispositivo => {
                   if (ricevente_dispositivo.Status == true) {
-                    var conn = connections[msg['ricevente_dtoken']]
-                    conn.sendUTF(JSON.stringify({
-                      riceverai_da: dtoken_mittente,
-                      interfacce: msg['interfacce']
-                    }));
-                    connection.sendUTF(JSON.stringify({
-                      job: true
-                    }));
+                    var conn = global.connections[msg['ricevente_dtoken']]
+                    if(mesg['interfacce'].mobile==false)
+                    {
+                      conn.sendUTF(JSON.stringify({
+                        riceverai_da: dtoken_mittente,
+                        interfacce: msg['interfacce']
+                      }));
+                      connection.sendUTF(JSON.stringify({
+                        job: true
+                      }));
+                    }                    
                   } else {
                     connection.sendUTF(JSON.stringify({
                       job: false
