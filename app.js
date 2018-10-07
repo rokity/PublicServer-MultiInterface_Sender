@@ -39,6 +39,7 @@ wsServer.on('request', function (request) {
       var msg = JSON.parse(message.utf8Data);
       if(msg['java_server']!=null)
       {
+        console.log("java server connesso")
         global.connections['java_server'] = connection;
       } else if (msg['dtoken'] != null && msg['utoken']) {
         var mongoose = require('mongoose')
