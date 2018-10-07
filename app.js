@@ -37,7 +37,7 @@ wsServer.on('request', function (request) {
   connection.on('message', function (message) {
     try {
       var msg = JSON.parse(message.utf8Data);
-      if(mesg['java_server']!=null)
+      if(msg['java_server']!=null)
       {
         global.connections['java_server'] = connection;
       } else if (msg['dtoken'] != null && msg['utoken']) {
