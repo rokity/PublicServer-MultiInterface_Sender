@@ -37,6 +37,7 @@ wsServer.on('request', function (request) {
   connection.on('message', function (message) {
     try {
       var msg = JSON.parse(message.utf8Data);
+      console.log(msg)
       if(msg['java_server']!=null)
       {
         console.log("java server connesso")
@@ -97,7 +98,18 @@ wsServer.on('request', function (request) {
                       connection.sendUTF(JSON.stringify({
                         job: true
                       }));
-                    }                    
+                    }else
+                    {
+                      global.connections['java_server'].send(JSON.stringify({ricevente:msg['ricevente_dtoken'],mittente:dtoken_mittente}));  
+
+                      conn.sendUTF(JSON.stringify({
+                        riceverai_da: dtoken_mittente,
+                        interfacce: msg['interfacce']
+                      }));
+                      connection.sendUTF(JSON.stringify({
+                        job: true
+                      }));
+                    }                  
                   } else {
                     connection.sendUTF(JSON.stringify({
                       job: false
