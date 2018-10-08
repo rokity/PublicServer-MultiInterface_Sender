@@ -89,7 +89,7 @@ wsServer.on('request', function (request) {
                 .exec().then(ricevente_dispositivo => {
                   if (ricevente_dispositivo.Status == true) {
                     var conn = global.connections[msg['ricevente_dtoken']]
-                    if(mesg['interfacce'].mobile==false)
+                    if(msg['interfacce'].mobile==false)
                     {
                       conn.sendUTF(JSON.stringify({
                         riceverai_da: dtoken_mittente,
