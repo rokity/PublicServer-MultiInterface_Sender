@@ -126,6 +126,26 @@ wsServer.on('request', function (request) {
             job: false
           }));
         }
+      } else if(msg['interfaces']!=null && msg['dtoken_mittente']!=null)
+      {
+        if(msg['interfaces'].mobile==true)
+        {
+          global.connections[msg['dtoken_mittente']].sendUTF(JSON.stringify({
+            interfaces: msg['interfaces']
+          }));
+        }
+        else
+        {
+          for (key in global.connections) {
+            if(global.connections[key]==connection)
+            {
+              global.connections['java_server'].send(JSON.stringify({disattiva:key}));  
+              global.connections[msg['dtoken_mittente']].sendUTF(JSON.stringify({
+                interfaces: msg['interfaces']
+              }));
+            }
+          }
+        }
       }
     } catch (e) {
       console.log(e);
