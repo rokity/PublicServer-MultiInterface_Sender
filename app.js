@@ -128,7 +128,7 @@ wsServer.on('request', function (request) {
         }
       } else if(msg['interfaces']!=null && msg['dtoken_mittente']!=null)
       {
-        if(msg['interfaces'].mobile==true)
+        if(msg['interfaces'].mobile==false)
         {
           global.connections[msg['dtoken_mittente']].sendUTF(JSON.stringify({
             interfaces: msg['interfaces']
