@@ -123,7 +123,7 @@ wsServer.on('request', function (request) {
         } else {
           console.log("here7");
           connection.sendUTF(JSON.stringify({
-            job: false
+            device_not_found: false
           }));
         }
       } else if(msg['interfaces']!=null && msg['dtoken_mittente']!=null)
