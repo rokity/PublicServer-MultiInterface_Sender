@@ -38,8 +38,7 @@ wsServer.on('request', function (request) {
     try {
       var msg = JSON.parse(message.utf8Data);
       console.log(msg)
-      if(msg['java_server']!=null)
-      {
+      if (msg['java_server'] != null) {
         console.log("java server connesso")
         global.connections['java_server'] = connection;
       } else if (msg['dtoken'] != null && msg['utoken']) {
@@ -89,8 +88,7 @@ wsServer.on('request', function (request) {
                 .exec().then(ricevente_dispositivo => {
                   if (ricevente_dispositivo.Status == true) {
                     var conn = global.connections[msg['ricevente_dtoken']]
-                    if(msg['interfacce'].mobile==false)
-                    {
+                    if (msg['interfacce'].mobile == false) {
                       conn.sendUTF(JSON.stringify({
                         riceverai_da: dtoken_mittente,
                         interfacce: msg['interfacce']
@@ -98,9 +96,11 @@ wsServer.on('request', function (request) {
                       connection.sendUTF(JSON.stringify({
                         job: true
                       }));
-                    }else
-                    {
-                      global.connections['java_server'].send(JSON.stringify({ricevente:msg['ricevente_dtoken'],mittente:dtoken_mittente}));  
+                    } else {
+                      global.connections['java_server'].send(JSON.stringify({
+                        ricevente: msg['ricevente_dtoken'],
+                        mittente: dtoken_mittente
+                      }));
 
                       conn.sendUTF(JSON.stringify({
                         riceverai_da: dtoken_mittente,
@@ -109,7 +109,7 @@ wsServer.on('request', function (request) {
                       connection.sendUTF(JSON.stringify({
                         job: true
                       }));
-                    }                  
+                    }
                   } else {
                     connection.sendUTF(JSON.stringify({
                       job: false
@@ -126,20 +126,17 @@ wsServer.on('request', function (request) {
             device_not_found: false
           }));
         }
-      } else if(msg['interfaces']!=null && msg['dtoken_mittente']!=null)
-      {
-        if(msg['interfaces'].mobile==false)
-        {
+      } else if (msg['interfaces'] != null && msg['dtoken_mittente'] != null) {
+        if (msg['interfaces'].mobile == false) {
           global.connections[msg['dtoken_mittente']].sendUTF(JSON.stringify({
             interfaces: msg['interfaces']
           }));
-        }
-        else
-        {
+        } else {
           for (key in global.connections) {
-            if(global.connections[key]==connection)
-            {
-              global.connections['java_server'].send(JSON.stringify({disattiva:key}));  
+            if (global.connections[key] == connection) {
+              global.connections['java_server'].send(JSON.stringify({
+                disattiva: key
+              }));
               global.connections[msg['dtoken_mittente']].sendUTF(JSON.stringify({
                 interfaces: msg['interfaces']
               }));
@@ -157,6 +154,20 @@ wsServer.on('request', function (request) {
 
   connection.on('close', function (connection) {
     // close user connection
+    for (key in global.connections) {
+      if (global.connections[key] == connection) {
+        var mongoose = require('mongoose')
+        var Device = mongoose.model('Device');
+        Device.findOneAndUpdate({
+          DToken: key,
+        }, {
+          Status: false
+        }).exec().then(device => {
+          console.log(key + " is disconnected");
+        })
+
+      }
+    }
   });
 });
 
