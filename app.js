@@ -153,7 +153,7 @@ wsServer.on('request', function (request) {
 
 
   connection.on('close', function (connection) {
-    console.log("close");
+    console.log("close"+connection);
     // close user connection
     for (key in global.connections) {
       if (global.connections[key] == connection) {
